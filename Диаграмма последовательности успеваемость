@@ -1,0 +1,85 @@
+@startuml
+
+actor "Преподаватель" as Teacher
+participant "GradeController" as Controller
+participant "IAcademicRecordsService" as RecordsService
+participant "IGroupsService" as GroupsService
+participant "IStudentsService" as StudentsService
+participant "DbContext" as DB
+
+Teacher -> Controller : Вход в систему
+activate Controller
+Controller -> Controller : Проверка аутентификации и роли "Преподаватель"
+Controller --> Teacher : Отображение личного кабинета
+
+Teacher -> Controller : Выбирает "Мои учебные курсы"
+Controller -> GroupsService : getTeacherGroups()
+activate GroupsService
+GroupsService -> DB : Запрос групп преподавателя
+DB --> GroupsService : Список групп и дисциплин
+GroupsService --> Controller : Данные о курсах
+deactivate GroupsService
+Controller --> Teacher : Отображение списка курсов
+
+Teacher -> Controller : Выбирает дисциплину и группу
+activate Controller
+Controller -> StudentsService : getStudentsByGroup()
+activate StudentsService
+StudentsService -> DB : Получение списка студентов группы
+DB --> StudentsService : Список студентов
+StudentsService --> Controller : Данные студентов
+deactivate StudentsService
+
+Controller -> RecordsService : getAcademicRecords()
+activate RecordsService
+RecordsService -> DB : Получение текущих оценок
+DB --> RecordsService : Данные оценок
+RecordsService --> Controller : Текущая успеваемость
+deactivate RecordsService
+Controller --> Teacher : Отображение журнала успеваемости
+
+loop Внесение оценок для каждого студента
+    Teacher -> Controller : Вводит оценку для студента
+    Controller -> RecordsService : addGrade()
+    activate RecordsService
+    
+    RecordsService -> RecordsService : validateGrade(2,3,4,5)
+    
+    alt Оценка валидна
+        RecordsService -> DB : Сохранение оценки в AcademicRecord
+        DB --> RecordsService : Подтверждение сохранения
+        
+        RecordsService -> RecordsService : calculateGPA()
+        RecordsService -> DB : Обновление среднего балла
+        DB --> RecordsService : Новый GPA
+        
+        RecordsService --> Controller : Успешное сохранение
+        Controller --> Teacher : Оценка сохранена, обновлен GPA
+    else Оценка неверная
+        RecordsService --> Controller : Ошибка валидации
+        Controller --> Teacher : "Ошибка: используйте шкалу 2,3,4,5"
+    end
+    deactivate RecordsService
+end
+
+Teacher -> Controller : Завершает ввод оценок
+Controller -> RecordsService : checkCompletionStatus()
+activate RecordsService
+RecordsService -> DB : Проверка всех оценок
+DB --> RecordsService : Статус завершенности
+RecordsService --> Controller : Результат проверки
+deactivate RecordsService
+
+alt Не все оценки выставлены
+    Controller --> Teacher : "Внимание: не все оценки выставлены"
+else Все оценки заполнены
+    Controller --> Teacher : "Все оценки успешно сохранены"
+end
+
+Controller -> Controller : Запись в журнал аудита
+Controller -> Controller : Закрытие сессии
+Controller --> Teacher : "Работа завершена"
+
+deactivate Controller
+
+@enduml
