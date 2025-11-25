@@ -1,3 +1,9 @@
+using Application.Interfaces.Repositories;
+using Application.Interfaces.Services;
+using Application.Services;
+using Infrastructure.Persistence.Repositories;
+using Infrastructure.Services;
+
 namespace API;
 
 public class Program
@@ -6,7 +12,16 @@ public class Program
 	{
 		var builder = WebApplication.CreateBuilder(args);
 
-		// Add services to the container.
+		builder.Services.AddTransient<IAcademicRecordsRepository, AcademicRecordsRepository>();
+		builder.Services.AddTransient<IGroupsRepository, GroupsRepository>();
+		builder.Services.AddTransient<IStudentsRepository, StudentsRepository>();
+
+		builder.Services.AddTransient<IDigitalDocumentManager, DigitalDocumentManager>();
+		builder.Services.AddTransient<IEducationalDepartmentService, EducationalDepartmentService>();
+
+		builder.Services.AddTransient<IAcademicRecordsService, AcademicRecordsService>();
+		builder.Services.AddTransient<IGroupsService, GroupsService>();
+		builder.Services.AddTransient<IStudentsService, StudentsService>();
 
 		builder.Services.AddControllers();
 		builder.Services.AddEndpointsApiExplorer();
