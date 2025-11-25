@@ -15,7 +15,11 @@ public class GroupsRepository : IGroupsRepository
 	public Group GetById(int id)
 	{
 		Console.WriteLine("GroupsRepository GetById");
-		return _dbContext.Groups.Single(g => g.Id == id);
+		// return _dbContext.Groups.Single(g => g.Id == id);
+		return new Group
+		{
+			GroupCode = "БСБО-01-23"
+		};
 	}
 
 	public List<Group> GetAll()

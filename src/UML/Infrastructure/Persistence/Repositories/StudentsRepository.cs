@@ -15,7 +15,17 @@ public class StudentsRepository : IStudentsRepository
 	public Student GetById(int id)
 	{
 		Console.WriteLine("StudentsRepository GetById");
-		return _dbContext.Students.Single(s => s.Id == id);
+		// return _dbContext.Students.Single(s => s.Id == id);
+		return new Student
+		{
+			FirstName = "Прошунин",
+			LastName = "Николай",
+			Code = "23БО177",
+			Status = new StudentStatus
+			{
+				Name = "Активен"
+			}
+		};
 	}
 
 	public List<Student> GetAll()

@@ -1,4 +1,5 @@
 using Application.Interfaces.Services;
+using Domain.Entities.Documents;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -33,6 +34,15 @@ public class DeanOfficeController : ControllerBase
 	public void ExpelStudent(int id)
 	{
 		Console.WriteLine("DeanOfficeController ExpelStudent");
+		var info = _studentsService.GetStudentInfo(id);
+		_groupsService.RemoveStudent(id);
+		_studentsService.ExpelStudent(id);
+		_digitalDocumentManager.RegisterDocument(new ExpulsionDocument
+		{
+			Id = "123123",
+			StudentId = id,
+			Date = DateOnly.FromDateTime(DateTime.Now)
+		});
 	}
 
 	[HttpPost("transferStudent")]

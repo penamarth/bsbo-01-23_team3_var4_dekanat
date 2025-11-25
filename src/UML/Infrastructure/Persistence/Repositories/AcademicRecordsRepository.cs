@@ -15,7 +15,21 @@ public class AcademicRecordsRepository : IAcademicRecordsRepository
 	public AcademicRecord GetById(int id)
 	{
 		Console.WriteLine("AcademicRecordsRepository GetById");
-		return _dbContext.Records.Single(r => r.Id == id);
+		// return _dbContext.Records.Single(r => r.Id == id);
+		return new AcademicRecord
+		{
+			Subject = "Алгоритмы",
+			Student = new Student
+			{
+				FirstName = "Прошунин",
+				LastName = "Николай",
+				Code = "23БО177",
+				Status = new StudentStatus
+				{
+					Name = "Активен"
+				}
+			}
+		};
 	}
 
 	public List<AcademicRecord> GetAll()
