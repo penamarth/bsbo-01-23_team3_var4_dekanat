@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-public class DeanOfficeController
+[ApiController]
+public class DeanOfficeController : ControllerBase
 {
 	private readonly IStudentsService _studentsService;
 	private readonly IGroupsService _groupsService;
@@ -22,25 +23,25 @@ public class DeanOfficeController
 		_educationalDepartmentService = educationalDepartmentService;
 	}
 
-	[HttpPost]
+	[HttpPost("enrollStudent")]
 	public void EnrollStudent()
 	{
 		Console.WriteLine("DeanOfficeController EnrollStudent");
 	}
 
-	[HttpPost]
+	[HttpPost("expelStudent/{id:int}")]
 	public void ExpelStudent(int id)
 	{
 		Console.WriteLine("DeanOfficeController ExpelStudent");
 	}
 
-	[HttpPost]
+	[HttpPost("transferStudent")]
 	public void TransferStudent(int studentId, int groupId)
 	{
 		Console.WriteLine("DeanOfficeController TransferStudent");
 	}
 
-	[HttpPut]
+	[HttpPut("updateAcademicPerformance")]
 	public void UpdateAcademicPerformance()
 	{
 		Console.WriteLine("DeanOfficeController UpdateAcademicPerformance");
