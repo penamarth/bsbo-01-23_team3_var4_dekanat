@@ -1,75 +1,87 @@
 @startuml
 
-actor User as user
-participant "UI" as ui
-participant "DeanOfficeController" as controller
-participant "IAcademicRecordsService" as ar_service
-participant "AcademicRecordsService" as ar_service_impl
-participant "IAcademicRecordsRepository" as ar_repo
-participant "AcademicRecordsRepository" as ar_repo_impl
-participant "DbContext" as db
+actor "Преподаватель" as Teacher
+participant "DeanOfficeController" as DO
+participant "IGroupsService" as IGS
+participant "IStudentsService" as ISS
+participant "IAcademicRecordsService" as IARS
+participant "StudentsService" as SS
+participant "AcademicRecordsService" as ARS
+participant "IStudentsRepository" as ISR
+participant "IAcademicRecordsRepository" as IARR
+participant "DbContext" as DB
 
-user -> ui : main()\n// Запуск приложения
-ui -> controller : updateAcademicPerformance()\n// Начало процесса обновления оценок
+Teacher -> DO: выставитьОценки(groupId, subject, evaluations)
+activate DO
 
-controller -> ar_service : addGrade()\n// Запрос на добавление новой оценки
-activate ar_service
-ar_service -> ar_service_impl : addGrade()\n// Вызов реализации сервиса
-activate ar_service_impl
+DO -> IGS: getGroupInfo(groupId)
+activate IGS
+IGS --> DO: groupInfo
+deactivate IGS
 
-ar_service_impl -> ar_repo : add()\n// Сохранение в базу данных
-activate ar_repo
-ar_repo -> ar_repo_impl : add()\n// Вызов реализации репозитория
-activate ar_repo_impl
-ar_repo_impl -> db : \n// SQL запрос INSERT
-ar_repo_impl --> ar_repo : AcademicRecord\n// Подтверждение создания записи
-deactivate ar_repo_impl
-ar_repo --> ar_service_impl : AcademicRecord\n// Возврат созданного объекта
-deactivate ar_repo
-ar_service_impl --> ar_service : AcademicRecord\n// Подтверждение успешного добавления
-deactivate ar_service_impl
-ar_service --> controller : AcademicRecord\n// Оценка добавлена в систему
-deactivate ar_service
+loop Для каждого студента в группе
+    DO -> ISS: getStudentInfo(studentId)
+    activate ISS
+    ISS -> SS: getStudentInfo(studentId)
+    activate SS
+    SS -> ISR: getById(studentId)
+    activate ISR
+    ISR -> DB: запрос к таблице Students
+    activate DB
+    DB --> ISR: данные Student
+    deactivate DB
+    ISR --> SS: Student
+    deactivate ISR
+    SS --> ISS: studentInfo
+    deactivate SS
+    ISS --> DO: studentInfo
+    deactivate ISS
+    
+    DO -> DO: определитьОценку(критерии)
+    
+    DO -> IARS: addGrade(studentId, subject, grade, date)
+    activate IARS
+    IARS -> ARS: addGrade(studentId, subject, grade, date)
+    activate ARS
+    ARS -> IARR: add(new AcademicRecord)
+    activate IARR
+    IARR -> DB: сохранить AcademicRecord
+    activate DB
+    note right DB: Создается новая запись\nсвязь с Student через studentId
+    DB --> IARR: запись создана
+    deactivate DB
+    IARR --> ARS: успешно
+    deactivate IARR
+    ARS --> IARS: gradeAdded
+    deactivate ARS
+    IARS --> DO: gradeAdded
+    deactivate IARS
+end
 
-controller -> ar_service : calculateGPA()\n// Запрос расчета среднего балла
-activate ar_service
-ar_service -> ar_service_impl : calculateGPA()\n// Вызов логики расчета
-activate ar_service_impl
+DO -> DO: обновитьАкадемическиеДанные()
 
-ar_service_impl -> ar_repo : getAll()\n// Получение всех оценок студента
-activate ar_repo
-ar_repo -> ar_repo_impl : getAll()\n// Запрос к базе данных
-activate ar_repo_impl
-ar_repo_impl -> db : \n// SQL запрос SELECT
-ar_repo_impl --> ar_repo : List<AcademicRecord>\n// Все академические записи
-deactivate ar_repo_impl
-ar_repo --> ar_service_impl : List<AcademicRecord>\n// Передача данных для расчета
-deactivate ar_repo
-ar_service_impl --> ar_service : double\n// Результат вычисления GPA
-deactivate ar_service_impl
-ar_service --> controller : double\n// Средний балл рассчитан
-deactivate ar_service
+loop Для каждого студента
+    DO -> IARS: getTranscript(studentId)
+    activate IARS
+    IARS -> ARS: getTranscript(studentId)
+    activate ARS
+    ARS -> IARR: getAllByStudent(studentId)
+    activate IARR
+    IARR -> DB: запрос AcademicRecord по studentId
+    activate DB
+    DB --> IARR: список AcademicRecord
+    deactivate DB
+    IARR --> ARS: academicRecords
+    deactivate IARR
+    ARS --> IARS: transcript
+    deactivate ARS
+    IARS --> DO: academicTranscript
+    deactivate IARS
+    
+    DO -> DO: опубликоватьВЛичныйКабинет(studentId, transcript)
+end
 
-controller -> ar_service : getTranscript()\n// Запрос академической ведомости
-activate ar_service
-ar_service -> ar_service_impl : getTranscript()\n// Формирование отчета
-activate ar_service_impl
-
-ar_service_impl -> ar_repo : getAll()\n// Получение полной истории оценок
-activate ar_repo
-ar_repo -> ar_repo_impl : getAll()\n// Запрос всех записей
-activate ar_repo_impl
-ar_repo_impl -> db : \n// SQL запрос с фильтрацией
-ar_repo_impl --> ar_repo : List<AcademicRecord>\n// Полный список оценок
-deactivate ar_repo_impl
-ar_repo --> ar_service_impl : List<AcademicRecord>\n// Данные для ведомости
-deactivate ar_repo
-ar_service_impl --> ar_service : List<AcademicRecord>\n// Сформированная ведомость
-deactivate ar_service_impl
-ar_service --> controller : List<AcademicRecord>\n// Академическая история готова
-deactivate ar_service
-
-controller --> ui : \n// Процесс завершен успешно
-ui --> user : \n// Результаты отображены пользователю
+DO --> Teacher: Оценки выставлены успешно
+deactivate DO
 
 @enduml
