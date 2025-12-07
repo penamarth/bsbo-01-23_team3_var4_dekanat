@@ -6,8 +6,8 @@ public interface IGroupsService
 {
 	void CreateGroup(Group group);
 	void DisbandGroup(int id);
-	void TransferStudent(int groupId, int studentId);
+	void TransferStudent(int studentId, int groupId);
 	Group GetGroupInfo(int id);
-	void AddStudent(int studentId);
+	void AddStudent(int studentId, int groupId);
 	void RemoveStudent(int studentId);
 }

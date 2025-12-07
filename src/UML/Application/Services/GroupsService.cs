@@ -7,10 +7,12 @@ namespace Application.Services;
 public class GroupsService : IGroupsService
 {
 	private readonly IGroupsRepository _groupsRepository;
+	private readonly IStudentsRepository _studentsRepository;
 
-	public GroupsService(IGroupsRepository groupsRepository)
+	public GroupsService(IGroupsRepository groupsRepository, IStudentsRepository studentsRepository)
 	{
 		_groupsRepository = groupsRepository;
+		_studentsRepository = studentsRepository;
 	}
 
 	public void CreateGroup(Group group)
@@ -23,9 +25,11 @@ public class GroupsService : IGroupsService
 		Console.WriteLine("GroupsService DisbandGroup");
 	}
 
-	public void TransferStudent(int groupId, int studentId)
+	public void TransferStudent(int studentId, int groupId)
 	{
 		Console.WriteLine("GroupsService TransferStudent");
+		RemoveStudent(studentId);
+		AddStudent(studentId, groupId);
 	}
 
 	public Group GetGroupInfo(int id)
@@ -34,13 +38,19 @@ public class GroupsService : IGroupsService
 		return _groupsRepository.GetById(id);
 	}
 
-	public void AddStudent(int studentId)
+	public void AddStudent(int studentId, int groupId)
 	{
 		Console.WriteLine("GroupsService AddStudent");
+		var student = _studentsRepository.GetById(studentId);
+		student.GroupId = groupId;
+		_studentsRepository.Update(student);
 	}
 
 	public void RemoveStudent(int studentId)
 	{
 		Console.WriteLine("GroupsService RemoveStudent");
+		var student = _studentsRepository.GetById(studentId);
+		student.GroupId = null;
+		_studentsRepository.Update(student);
 	}
 }

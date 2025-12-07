@@ -7,7 +7,7 @@ public class EducationalDepartmentService : IEducationalDepartmentService
 	public string CheckRequestStatus(int id)
 	{
 		Console.WriteLine("EducationalDepartmentService CheckRequestStatus");
-		return string.Empty;
+		return "Success";
 	}
 
 	public void SendTransferRequest(int studentId, int groupId)
