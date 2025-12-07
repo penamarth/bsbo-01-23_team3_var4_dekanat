@@ -18,9 +18,9 @@ public class StudentsService : IStudentsService
 		Console.WriteLine("StudentsService CreateStudent");
 	}
 
-	public void ExpelStudent(int studentId)
+	public void ExpellStudent(int studentId)
 	{
-		Console.WriteLine("StudentsService ExpelStudent");
+		Console.WriteLine("StudentsService ExpellStudent");
 	}
 
 	public void TransferStudent(int studentId, int groupId)
