@@ -18,10 +18,16 @@ public class StudentsService : IStudentsService
 		Console.WriteLine("StudentsService CreateStudent");
 	}
 
-	public void ExpellStudent(int studentId)
-	{
-		Console.WriteLine("StudentsService ExpellStudent");
-	}
+    public void ExpellStudent(int studentId, string reason)
+    {
+        Console.WriteLine($"StudentsService ExpellStudent по причине: {reason}");
+        
+        var student = _studentsRepository.GetById(studentId);
+        if (student != null)
+        {
+            Console.WriteLine($"Отчислен студент: {student.FirstName} {student.LastName} ({student.Code})");
+        }
+    }
 
 	public void TransferStudent(int studentId, int groupId)
 	{

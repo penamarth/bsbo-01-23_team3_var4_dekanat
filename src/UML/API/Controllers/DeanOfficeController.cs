@@ -30,13 +30,13 @@ public class DeanOfficeController : ControllerBase
 		Console.WriteLine("DeanOfficeController EnrollStudent");
 	}
 
-	[HttpPost("ExpellStudent/{id:int}")]
-	public void ExpellStudent(int id, [FromBody] string reason)
+	[HttpPost("expellStudent/{id:int}")]
+	public IActionResult ExpellStudent(int id, [FromBody] ExpulsionRequest request)
 	{
 		Console.WriteLine("DeanOfficeController ExpellStudent");
 		var info = _studentsService.GetStudentInfo(id);
 		_groupsService.RemoveStudent(id);
-		_studentsService.ExpellStudent(id);
+        _studentsService.ExpellStudent(id, request.Reason);
 		_digitalDocumentManager.RegisterDocument(new ExpulsionDocument
 		{
 			Id = "123123",
@@ -44,6 +44,8 @@ public class DeanOfficeController : ControllerBase
 			Date = DateOnly.FromDateTime(DateTime.Now)
 			Reason = reason
 		});
+		
+		return Ok(new { Message = $"Студент {info.FirstName} {info.LastName} успешно отчислен по причине: {request.Reason}" });
 	}
 
 	[HttpPost("transferStudent")]
@@ -61,4 +63,18 @@ public class DeanOfficeController : ControllerBase
 	{
 		Console.WriteLine("DeanOfficeController UpdateAcademicPerformance");
 	}
+}
+
+public class ExpulsionRequest
+{
+    public string Reason { get; set; }
+}
+
+public enum ExpulsionReason
+{
+    AcademicFailure,  
+    OwnRequest,
+    NonPayment,
+    ViolationOfRules,
+    Other
 }
