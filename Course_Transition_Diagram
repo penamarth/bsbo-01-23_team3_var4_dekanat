@@ -1,0 +1,51 @@
+@startuml
+actor "Сотрудник деканата" as DeanWorker
+participant "DeanOfficeController" as DO
+participant "IStudentsService" as ISS
+participant "IGroupsService" as IGS
+participant "IAcademicRecordsService" as IARS
+participant "IDigitalDocumentManager" as IDDM
+participant "IEducationalDepartmentService" as IEDS
+
+DeanWorker -> DO: promoteStudentToNextCourse(studentId, newGroupId)
+activate DO
+
+DO -> ISS: getStudentInfo(studentId)
+activate ISS
+ISS --> DO: studentInfo
+deactivate ISS
+
+DO -> IARS: getTranscript(studentId)
+activate IARS
+IARS --> DO: academicTranscript
+deactivate IARS
+
+alt все экзамены сданы
+  DO -> ISS: transferStudent(studentId, newGroupId)
+  activate ISS
+  
+  ISS -> IGS: transferStudent(studentId, newGroupId)
+  activate IGS
+  IGS --> ISS: студент переведён
+  deactivate IGS
+  
+  ISS --> DO: перевод завершён
+  deactivate ISS
+  
+  DO -> IDDM: registerDocument(приказОПереводе)
+  activate IDDM
+  IDDM --> DO: документЗарегистрирован
+  deactivate IDDM
+  
+  DO -> IEDS: sendTransferRequest(studentId, newGroupId)
+  activate IEDS
+  IEDS --> DO: запросОтправлен
+  deactivate IEDS
+  
+  DO --> DeanWorker: Студент успешно переведён
+else есть задолженности
+  DO --> DeanWorker: Перевод отклонён: академическая задолженность
+end
+
+deactivate DO
+@enduml
