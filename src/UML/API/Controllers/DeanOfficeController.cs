@@ -49,7 +49,6 @@ public class DeanOfficeController : ControllerBase
 	public void TransferStudent(int studentId, int groupId)
 	{
 		Console.WriteLine("DeanOfficeController TransferStudent");
-		_educationalDepartmentService.SendTransferRequest(studentId, groupId);
 		if (_educationalDepartmentService.CheckRequestStatus(studentId) != "Success")
 			return;
 		_groupsService.TransferStudent(studentId, groupId);
