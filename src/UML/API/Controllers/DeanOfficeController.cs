@@ -52,7 +52,7 @@ public class DeanOfficeController : ControllerBase
 		_educationalDepartmentService.SendTransferRequest(studentId, groupId);
 		if (_educationalDepartmentService.CheckRequestStatus(studentId) != "Success")
 			return;
-		_groupsService.TransferStudent(groupId, studentId);
+		_groupsService.TransferStudent(studentId, groupId);
 	}
 
 	[HttpPut("updateAcademicPerformance")]
