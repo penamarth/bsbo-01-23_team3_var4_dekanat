@@ -61,8 +61,3 @@ public class DeanOfficeController : ControllerBase
 		Console.WriteLine("DeanOfficeController UpdateAcademicPerformance");
 	}
 }
-
-public class ExpulsionRequest
-{
-    public string Reason { get; set; }
-}
