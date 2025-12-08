@@ -30,20 +30,21 @@ public class DeanOfficeController : ControllerBase
 		Console.WriteLine("DeanOfficeController EnrollStudent");
 	}
 
-	[HttpPost("expelStudent/{id:int}")]
-	public void ExpelStudent(int id)
-	{
-		Console.WriteLine("DeanOfficeController ExpelStudent");
-		var info = _studentsService.GetStudentInfo(id);
-		_groupsService.RemoveStudent(id);
-		_studentsService.ExpelStudent(id);
-		_digitalDocumentManager.RegisterDocument(new ExpulsionDocument
-		{
-			Id = "123123",
-			StudentId = id,
-			Date = DateOnly.FromDateTime(DateTime.Now)
-		});
-	}
+    [HttpPost("expellStudent/{id:int}/{reason}")]
+    public void ExpellStudent(int id, string reason)
+    {
+        Console.WriteLine("DeanOfficeController ExpellStudent");
+        var info = _studentsService.GetStudentInfo(id);
+        _groupsService.RemoveStudent(id);
+        _studentsService.ExpellStudent(id, reason);
+        _digitalDocumentManager.RegisterDocument(new ExpulsionDocument
+        {
+            Id = "123123",
+            StudentId = id,
+            Date = DateOnly.FromDateTime(DateTime.Now),
+            Reason = reason
+        });
+    }
 
 	[HttpPost("transferStudent")]
 	public void TransferStudent(int studentId, int groupId)
