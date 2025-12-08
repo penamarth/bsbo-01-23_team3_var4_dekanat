@@ -7,19 +7,19 @@ participant "IAcademicRecordsService" as IARS
 participant "IAcademicRecordsRepository" as IARR
 participant "DbContext" as DB
 
-Teacher -> DO: updateAcademicPerformance(groupId, subject, evaluations)
+Teacher -> DO: updateAcademicPerformance(subject, studentId, grade, date)
 activate DO
 
-loop Для каждого evaluation в evaluations
-    DO -> ISS: getStudentInfo(evaluation.studentId)
+
+    DO -> ISS: getStudentInfo(studentId)
     activate ISS
     ISS -> ISS: [внутренняя логика получения студента]
     ISS --> DO: studentInfo
     deactivate ISS
     
-    DO -> DO: определитьОценку(evaluation)
+    DO -> DO: определитьОценку(studentId, grade, date)
     
-    DO -> IARS: addGrade(evaluation.studentId, subject, evaluation.grade, evaluation.date)
+    DO -> IARS: addGrade( subject, studentId, grade, date)
     activate IARS
     IARS -> IARR: add(new AcademicRecord)
     activate IARR
@@ -31,7 +31,7 @@ loop Для каждого evaluation в evaluations
     IARR --> IARS: запись успешно добавлена
     deactivate IARR
     
-    IARS -> ISS: updateStudentAcademicRecords(evaluation.studentId)
+    IARS -> ISS: updateStudentAcademicRecords(studentId)
     activate ISS
     ISS -> ISS: [внутренняя логика обновления записей]
     ISS --> IARS: обновлено
@@ -39,7 +39,7 @@ loop Для каждого evaluation в evaluations
     
     IARS --> DO: gradeAdded
     deactivate IARS
-end
+
 
 
 DO --> Teacher: Оценки выставлены успешно
