@@ -2,84 +2,45 @@
 
 actor "Преподаватель" as Teacher
 participant "DeanOfficeController" as DO
-participant "IGroupsService" as IGS
 participant "IStudentsService" as ISS
 participant "IAcademicRecordsService" as IARS
-participant "StudentsService" as SS
-participant "AcademicRecordsService" as ARS
-participant "IStudentsRepository" as ISR
 participant "IAcademicRecordsRepository" as IARR
 participant "DbContext" as DB
 
-Teacher -> DO: выставитьОценки(groupId, subject, evaluations)
+Teacher -> DO: updateAcademicPerformance(groupId, subject, evaluations)
 activate DO
 
-DO -> IGS: getGroupInfo(groupId)
-activate IGS
-IGS --> DO: groupInfo
-deactivate IGS
-
-loop Для каждого студента в группе
-    DO -> ISS: getStudentInfo(studentId)
+loop Для каждого evaluation в evaluations
+    DO -> ISS: getStudentInfo(evaluation.studentId)
     activate ISS
-    ISS -> SS: getStudentInfo(studentId)
-    activate SS
-    SS -> ISR: getById(studentId)
-    activate ISR
-    ISR -> DB: запрос к таблице Students
-    activate DB
-    DB --> ISR: данные Student
-    deactivate DB
-    ISR --> SS: Student
-    deactivate ISR
-    SS --> ISS: studentInfo
-    deactivate SS
+    ISS -> ISS: [внутренняя логика получения студента]
     ISS --> DO: studentInfo
     deactivate ISS
     
-    DO -> DO: определитьОценку(критерии)
+    DO -> DO: определитьОценку(evaluation)
     
-    DO -> IARS: addGrade(studentId, subject, grade, date)
+    DO -> IARS: addGrade(evaluation.studentId, subject, evaluation.grade, evaluation.date)
     activate IARS
-    IARS -> ARS: addGrade(studentId, subject, grade, date)
-    activate ARS
-    ARS -> IARR: add(new AcademicRecord)
+    IARS -> IARR: add(new AcademicRecord)
     activate IARR
     IARR -> DB: сохранить AcademicRecord
     activate DB
     note right DB: Создается новая запись\nсвязь с Student через studentId
     DB --> IARR: запись создана
     deactivate DB
-    IARR --> ARS: успешно
+    IARR --> IARS: запись успешно добавлена
     deactivate IARR
-    ARS --> IARS: gradeAdded
-    deactivate ARS
+    
+    IARS -> ISS: updateStudentAcademicRecords(evaluation.studentId)
+    activate ISS
+    ISS -> ISS: [внутренняя логика обновления записей]
+    ISS --> IARS: обновлено
+    deactivate ISS
+    
     IARS --> DO: gradeAdded
     deactivate IARS
 end
 
-DO -> DO: обновитьАкадемическиеДанные()
-
-loop Для каждого студента
-    DO -> IARS: getTranscript(studentId)
-    activate IARS
-    IARS -> ARS: getTranscript(studentId)
-    activate ARS
-    ARS -> IARR: getAllByStudent(studentId)
-    activate IARR
-    IARR -> DB: запрос AcademicRecord по studentId
-    activate DB
-    DB --> IARR: список AcademicRecord
-    deactivate DB
-    IARR --> ARS: academicRecords
-    deactivate IARR
-    ARS --> IARS: transcript
-    deactivate ARS
-    IARS --> DO: academicTranscript
-    deactivate IARS
-    
-    DO -> DO: опубликоватьВЛичныйКабинет(studentId, transcript)
-end
 
 DO --> Teacher: Оценки выставлены успешно
 deactivate DO
