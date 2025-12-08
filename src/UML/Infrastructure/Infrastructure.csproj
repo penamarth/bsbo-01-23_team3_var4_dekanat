@@ -8,6 +8,11 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Application\Application.csproj" />
+      <ProjectReference Include="..\MireaLib\MireaLib.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Services\DigitalDocumentManager.cs" />
     </ItemGroup>
 
 </Project>
