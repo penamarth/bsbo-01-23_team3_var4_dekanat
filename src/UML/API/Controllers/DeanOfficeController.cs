@@ -31,7 +31,7 @@ public class DeanOfficeController : ControllerBase
 	}
 
 	[HttpPost("expellStudent/{id:int}")]
-	public IActionResult ExpellStudent(int id, [FromBody] ExpulsionRequest request)
+	public void ExpellStudent(int id, [FromBody] ExpulsionRequest request)
 	{
 		Console.WriteLine("DeanOfficeController ExpellStudent");
 		var info = _studentsService.GetStudentInfo(id);
@@ -45,7 +45,6 @@ public class DeanOfficeController : ControllerBase
 			Reason = reason
 		});
 		
-		return Ok(new { Message = $"Студент {info.FirstName} {info.LastName} успешно отчислен по причине: {request.Reason}" });
 	}
 
 	[HttpPost("transferStudent")]
@@ -68,13 +67,4 @@ public class DeanOfficeController : ControllerBase
 public class ExpulsionRequest
 {
     public string Reason { get; set; }
-}
-
-public enum ExpulsionReason
-{
-    AcademicFailure,  
-    OwnRequest,
-    NonPayment,
-    ViolationOfRules,
-    Other
 }
