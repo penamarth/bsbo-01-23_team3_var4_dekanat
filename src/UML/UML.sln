@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{E7DEE914-9FDF-440F-A704-85774FF59B1E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MireaLib", "MireaLib\MireaLib.csproj", "{8200D19F-F5B1-4D7C-A061-2577B06A4B50}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{E7DEE914-9FDF-440F-A704-85774FF59B1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7DEE914-9FDF-440F-A704-85774FF59B1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7DEE914-9FDF-440F-A704-85774FF59B1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8200D19F-F5B1-4D7C-A061-2577B06A4B50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8200D19F-F5B1-4D7C-A061-2577B06A4B50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8200D19F-F5B1-4D7C-A061-2577B06A4B50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8200D19F-F5B1-4D7C-A061-2577B06A4B50}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
