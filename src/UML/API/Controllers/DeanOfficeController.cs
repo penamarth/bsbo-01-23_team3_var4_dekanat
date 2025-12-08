@@ -41,8 +41,8 @@ public class DeanOfficeController : ControllerBase
 		{
 			Id = "123123",
 			StudentId = id,
-			Date = DateOnly.FromDateTime(DateTime.Now)
-			Reason = reason
+			Date = DateOnly.FromDateTime(DateTime.Now),
+			Reason = request.Reason
 		});
 		
 	}
